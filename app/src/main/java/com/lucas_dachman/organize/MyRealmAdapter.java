@@ -4,34 +4,21 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmBaseAdapter;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 
 /**
  * Created by Lucas on 4/16/2016.
  */
-public class MyRealmAdapter extends RealmBaseAdapter<Note> implements ListAdapter {
+public class MyRealmAdapter extends RealmBaseAdapter<Note> {
 
     Realm realm;
 
-    public MyRealmAdapter(Context context, int resId,
-                          RealmResults<Note> realmResults,
-                          boolean automaticUpdate) {
-        super(context, realmResults, automaticUpdate);
-
-        realm = Realm.getDefaultInstance();
+    public MyRealmAdapter(Context context, OrderedRealmCollection<Note> data) {
+        super(context, data, true);
     }
 
     @Override
@@ -46,7 +33,7 @@ public class MyRealmAdapter extends RealmBaseAdapter<Note> implements ListAdapte
         TextView title_textView = (TextView) convertView.findViewById(R.id.note_title_preview);
         TextView text_textView = (TextView) convertView.findViewById(R.id.note_text_preview);
 
-        Note note = realmResults.get(position);
+        Note note = adapterData.get(position);
         title_textView.setText(note.getTitle());
         if(note.getText().toString().length() <= 20) {
             text_textView.setText(note.getText().toString());
@@ -60,7 +47,7 @@ public class MyRealmAdapter extends RealmBaseAdapter<Note> implements ListAdapte
         return convertView;
     }
 
-    public RealmResults<Note> getRealmResults() {
-        return realmResults;
+    public OrderedRealmCollection<Note> getAdapterData() {
+        return adapterData;
     }
 }

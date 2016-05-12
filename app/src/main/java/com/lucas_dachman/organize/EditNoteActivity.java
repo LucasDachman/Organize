@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -28,6 +29,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 public class EditNoteActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
@@ -138,6 +141,13 @@ public class EditNoteActivity extends AppCompatActivity implements DatePickerDia
         note.setText(text_edit.getText().toString());
         note.setTitle(title_edit.getText().toString());
         note.setDateCreated(System.currentTimeMillis());
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(note);
+        realm.commitTransaction();
+
+
 
 //        if(isNewNote) {
 //            // Clear EditTexts

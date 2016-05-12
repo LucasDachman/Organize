@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
         realm.addChangeListener(realmListener);
 
         RealmQuery query = realm.where(Note.class);
-        RealmResults<Note> results = query.findAllAsync();
-        adapter = new MyRealmAdapter(this, R.layout.note_row_layout, results, true);
+        RealmResults<Note> results = query.findAll();
+        adapter = new MyRealmAdapter(this, results);
 
 
 
