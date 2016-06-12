@@ -17,29 +17,42 @@ import android.widget.Toast;
  * Created by Lucas on 4/18/2016.
  */
 public class AlarmReceiver extends WakefulBroadcastReceiver {
+    Note note;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Ringtone ringtone = RingtoneManager.getRingtone(context, Settings.System.DEFAULT_RINGTONE_URI);
-        ringtone.setStreamType(RingtoneManager.TYPE_NOTIFICATION);
-        ringtone.play();
+        // TODO: Fix the ringtone sound stuff
+//        Ringtone ringtone = RingtoneManager.getRingtone(context, Settings.System.DEFAULT_RINGTONE_URI);
+//        ringtone.setStreamType(RingtoneManager.TYPE_NOTIFICATION);
+//        ringtone.play();
         Toast.makeText(context, "Alarm Received", Toast.LENGTH_SHORT).show();
 
+        // Get corrisponding note
+        long noteId = intent.getLongExtra("note_id", 0);
+        note = Note.getNote(noteId);
+
+        int requestCode = intent.getExtras().getInt("request code");
         // TODO: Create a notification
+        Intent stopRingtoneIntent = new Intent(context, NotificationHandlerFragment.class);
+        stopRingtoneIntent.putExtra("buttonAction", "stopRingtone");
+        PendingIntent stopRingtonePendingIntent = PendingIntent.getActivity(context, 0, stopRingtoneIntent, 0);
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_alarm_white_24dp)
-                .setContentTitle("Organize Notification")
-                .setContentText("This is a notification");
-        Intent resultIntent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, 0);
+                .setContentTitle(note.getTitle())
+                .setContentText(note.getTextShort())
+                .addAction(R.mipmap.ic_alarm_white_24dp, "Stop Ringtone", stopRingtonePendingIntent);
+        Intent resultIntent = new Intent(context, EditNoteActivity.class);
+        resultIntent.putExtra("note_id", noteId);
+        resultIntent.putExtra("isNewNote", false);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         mBuilder.setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        int requestCode = intent.getExtras().getInt("request code");
         notificationManager.notify(requestCode, mBuilder.build());
 
-
+        String buttonAction = intent.getStringExtra("buttonAction");
         // TODO: Allow the user to stop the ringtone
         // TODO: Find out how to edit the ringtone properties from EditNoteActivity
     }
