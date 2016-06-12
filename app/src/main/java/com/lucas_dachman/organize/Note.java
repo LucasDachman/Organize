@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -61,6 +62,14 @@ public class Note extends RealmObject {
 
     public String getText() {
         return text;
+    }
+
+    public String getTextShort() {
+
+        if(getText().length() <= 20)
+            return getText();
+        else
+            return getText().substring(0, 20) + "...";
     }
 
     public String getTitle() {
@@ -144,6 +153,7 @@ public class Note extends RealmObject {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("request code", requestCode);
+        intent.putExtra("note_id", getDateCreated());
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, initAlarmTime, alarmIntent);
@@ -180,13 +190,16 @@ public class Note extends RealmObject {
     }
 
     public static Note getNote(long _note_id) {
-        // TODO: Handle when note is not found
         Note n;
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<Note> query = realm.where(Note.class);
         query.equalTo("dateCreated", _note_id);
-        n = query.findAll().get(0);
-
+        try {
+            n = query.findAll().get(0);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Log.i("Note not found", "id: " + _note_id);
+            n = new Note();
+        }
         return n;
 
     }
