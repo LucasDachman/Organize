@@ -71,6 +71,7 @@
         android:id="@+id/textView_alarmDate"
         android:layout_alignBottom="@+id/button_addReminder"
         android:layout_alignTop="@+id/button_addReminder"
+        android:layout_marginTop="9dp"
         android:layout_toRightOf="@+id/button_addReminder"
         />
 
